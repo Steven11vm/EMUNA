@@ -2,7 +2,7 @@
 session_start();
 
 $users = [
-    "SANDRA MENDOZA" => ["id" => 1, "password" => "123", "role" => "Subgerente"],
+    "SANDRA MENDOZA" => ["id" => 1, "password" => "123", "role" => "NUNCA TE RINDAS"],
 
 ];
 
