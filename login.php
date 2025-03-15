@@ -3,7 +3,6 @@ session_start();
 
 $users = [
     "SANDRA MENDOZA" => ["id" => 1, "password" => "123", "role" => "NUNCA TE RINDAS"],
-
 ];
 
 $error = "";
@@ -17,12 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($users[$username]) && $users[$username]["password"] === $password) {
         $_SESSION["username"] = $username;
         $_SESSION["role"] = $users[$username]["role"];
-
-        if ($username === "Sky") {
-            header("Location: subir.php");
-        } else {
-            header("Location: Index.php");
-        }
+        header("Location: Index.php");
         exit();
     } else {
         $error = "Usuario o contraseña incorrectos";
@@ -35,8 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesion</title>
-    <link rel="icon" type="image/x-icon" href="">
+    <title>EMUNA - Iniciar Sesión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         * {
@@ -46,53 +39,74 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         body {
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: url('ruta-a-tu-gif-de-jeringas.gif') center/cover fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            z-index: 1;
         }
 
         .header {
+            position: relative;
+            z-index: 2;
             margin-bottom: 30px;
             text-align: center;
         }
 
         .header img {
-            max-width: 250px;
+            max-width: 200px;
             height: auto;
         }
 
         .modal {
-            background: #ffffff;
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 450px;
-            animation: fadeIn 0.8s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         h2 {
-            color: #003B7A;
+            color: #ff69b4;
             margin-bottom: 30px;
             font-size: 28px;
             text-align: center;
             font-weight: 600;
+            text-transform: uppercase;
         }
 
         .error-message {
             color: #dc3545;
-            background: #f8d7da;
+            background: rgba(255, 105, 180, 0.1);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 14px;
             text-align: center;
             animation: shake 0.5s ease-in-out;
+            border: 1px solid rgba(255, 105, 180, 0.2);
         }
 
         .input-group {
@@ -102,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         label {
             display: block;
             margin-bottom: 8px;
-            color: #003B7A;
+            color: #ff69b4;
             font-weight: 500;
             font-size: 16px;
         }
@@ -110,34 +124,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         input {
             width: 100%;
             padding: 14px;
-            border: 2px solid #E0E0E0;
-            border-radius: 8px;
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         input:focus {
-            border-color: #003B7A;
+            border-color: #ff69b4;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 59, 122, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
         }
 
         button {
-            background: #003B7A;
+            background: linear-gradient(45deg, #ff69b4, #ff8dc7);
             color: white;
             border: none;
             padding: 16px;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             width: 100%;
             font-size: 16px;
             font-weight: 600;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         button:hover {
-            background: #002857;
+            background: linear-gradient(45deg, #ff8dc7, #ff69b4);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
         }
 
         button:active {
@@ -168,8 +186,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="" alt="EMUNA">
+    <div class="header animate__animated animate__fadeIn">
+        <img src="ruta-a-tu-logo.png" alt="EMUNA">
     </div>
     
     <div class="modal animate__animated animate__fadeIn">
@@ -178,7 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <?php if ($error): ?>
                 <div class="error-message animate__animated animate__shakeX">
-                    <?php echo $error; ?>
+                    <?php echo htmlspecialchars($error); ?>
                 </div>
             <?php endif; ?>
             

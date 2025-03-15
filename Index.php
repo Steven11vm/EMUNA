@@ -336,8 +336,8 @@ session_start();
                 <p>Sistema de gestión para tu negocio de sueroterapia y cuidado facial. Registra, organiza y da seguimiento a tus clientes de manera eficiente.</p>
                 
                 <div class="main-buttons">
-                    <button class="btn-primary">Comenzar Ahora</button>
-                    <button class="btn-secondary">Ver Demostración</button>
+                    <a href="Registro.php"><button class="btn-primary">Comenzar Ahora</button></a>
+                   
                 </div>
             </section>
 
