@@ -385,21 +385,13 @@ session_start();
                             <p>Envía notificaciones a tus clientes para próximas citas y seguimientos.</p>
                         </div>
                     </div>
-
-                    <div class="feature-item">
-                        <div class="feature-icon">📱</div>
-                        <div class="feature-content">
-                            <h4>Acceso Móvil</h4>
-                            <p>Gestiona tu negocio desde cualquier dispositivo, en cualquier momento y lugar.</p>
-                        </div>
-                    </div>
                 </div>
             </section>
         </main>
 
         <footer>
             <div class="footer-logo">EMUNA</div>
-            <p>© 2025 EMUNA - Sistema de Gestión para Sueroterapia y Cuidado Facial</p>
+            <p>© 2025 EMUNA - Sistema de Gestión para Sueroterapia y Cuidado Facial,Sandra Mendoza</p>
         </footer>
     </div>
 </body>

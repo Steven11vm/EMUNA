@@ -190,7 +190,7 @@ $chartData = [
 
         .sidebar-toggle {
             position: absolute;
-            right: -15px;
+            right: 1px;
             top: 20px;
             width: 30px;
             height: 30px;
@@ -578,9 +578,10 @@ $chartData = [
                                 <textarea class="form-control" name="notas" rows="3"></textarea>
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary px-4">
-                                    <i class="fas fa-save me-2"></i>Guardar Cliente
-                                </button>
+                            <button type="submit" class="btn px-4" style="background-color: #e83e8c; color: white;">
+    <i class="fas fa-save me-2"></i>Guardar Cliente
+</button>
+
                             </div>
                         </div>
                     </form>
