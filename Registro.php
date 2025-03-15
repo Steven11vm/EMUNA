@@ -28,7 +28,42 @@ function getPageContent($page) {
                 ['Ana Rodríguez', '2024-03-22', '15:00', 'Sueroterapia', 'Pendiente']
             ]
         ],
-        // ... (resto de las páginas)
+        'tratamientos' => [
+            'title' => 'Seguimiento de Tratamientos',
+            'headers' => ['Paciente', 'Tratamiento', 'Inicio', 'Fin', 'Progreso', 'Acciones'],
+            'data' => [
+                ['María García', 'Sueroterapia', '2024-02-15', '2024-04-15', '50%'],
+                ['Juan Pérez', 'Facial', '2024-03-01', '2024-05-01', '25%'],
+                ['Ana Rodríguez', 'Sueroterapia', '2024-03-10', '2024-05-10', '15%']
+            ]
+        ],
+        'estadisticas' => [
+            'title' => 'Estadísticas',
+            'headers' => ['Métrica', 'Valor', 'Cambio', 'Período', 'Tendencia', 'Acciones'],
+            'data' => [
+                ['Clientes Nuevos', '45', '+15%', 'Este mes', '↑'],
+                ['Ingresos', '$5,234', '+22%', 'Este mes', '↑'],
+                ['Tratamientos', '156', '+10%', 'Este mes', '↑']
+            ]
+        ],
+        'recordatorios' => [
+            'title' => 'Recordatorios',
+            'headers' => ['Tipo', 'Paciente', 'Fecha', 'Mensaje', 'Estado', 'Acciones'],
+            'data' => [
+                ['Cita', 'María García', '2024-03-20', 'Recordatorio de cita', 'Pendiente'],
+                ['Seguimiento', 'Juan Pérez', '2024-03-21', 'Seguimiento tratamiento', 'Enviado'],
+                ['Cita', 'Ana Rodríguez', '2024-03-22', 'Recordatorio de cita', 'Pendiente']
+            ]
+        ],
+        'compras' => [
+            'title' => 'Gestión de Compras',
+            'headers' => ['Producto', 'Proveedor', 'Cantidad', 'Precio', 'Fecha', 'Estado', 'Acciones'],
+            'data' => [
+                ['Suero Vitamina C', 'Laboratorios ABC', '50', '$1,500', '2024-03-10', 'Recibido'],
+                ['Crema Facial', 'Cosméticos XYZ', '30', '$900', '2024-03-15', 'Pendiente'],
+                ['Jeringas', 'Medical Supplies', '100', '$300', '2024-03-05', 'Recibido']
+            ]
+        ]
     ];
 
     return isset($content[$page]) ? $content[$page] : $content['clientes'];
@@ -44,6 +79,26 @@ if (isset($_POST['menuState'])) {
 }
 
 $menuCollapsed = isset($_SESSION['menuCollapsed']) ? $_SESSION['menuCollapsed'] : false;
+
+// Datos para gráficos (simulados)
+$chartData = [
+    'clientes' => [
+        'labels' => ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        'data' => [65, 78, 90, 105, 120, 145]
+    ],
+    'citas' => [
+        'labels' => ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+        'data' => [12, 19, 15, 17, 14, 8, 2]
+    ],
+    'ingresos' => [
+        'labels' => ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        'data' => [3500, 4200, 5100, 4800, 5600, 6200]
+    ],
+    'tratamientos' => [
+        'labels' => ['Sueroterapia', 'Facial', 'Botox', 'Masajes', 'Otros'],
+        'data' => [45, 25, 15, 10, 5]
+    ]
+];
 ?>
 
 <!DOCTYPE html>
@@ -54,6 +109,7 @@ $menuCollapsed = isset($_SESSION['menuCollapsed']) ? $_SESSION['menuCollapsed'] 
     <title>EMUNA - Sistema de Gestión</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #ff69b4;
@@ -134,7 +190,7 @@ $menuCollapsed = isset($_SESSION['menuCollapsed']) ? $_SESSION['menuCollapsed'] 
 
         .sidebar-toggle {
             position: absolute;
-            right: 1px;
+            right: -15px;
             top: 20px;
             width: 30px;
             height: 30px;
@@ -229,6 +285,13 @@ $menuCollapsed = isset($_SESSION['menuCollapsed']) ? $_SESSION['menuCollapsed'] 
 
         .card-body {
             padding: 1.5rem;
+        }
+
+        /* Chart styles */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
         }
 
         /* Form styles */
@@ -343,6 +406,10 @@ $menuCollapsed = isset($_SESSION['menuCollapsed']) ? $_SESSION['menuCollapsed'] 
                 <i class="fas fa-bell"></i>
                 <span class="menu-text">Recordatorios</span>
             </a>
+            <a href="?page=compras" class="menu-item <?= $currentPage == 'compras' ? 'active' : '' ?>">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="menu-text">Gestión de Compras</span>
+            </a>
         </div>
     </aside>
 
@@ -378,8 +445,111 @@ $menuCollapsed = isset($_SESSION['menuCollapsed']) ? $_SESSION['menuCollapsed'] 
                 </div>
             </div>
 
-            <!-- Form Section -->
+            <?php if($currentPage == 'estadisticas'): ?>
+            <!-- Gráficos para la página de estadísticas -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Evolución de Clientes</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="clientesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Citas por Día</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="citasChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Ingresos Mensuales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="ingresosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Distribución de Tratamientos</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="tratamientosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if($currentPage == 'compras'): ?>
+            <!-- Formulario de Compras -->
+            <div class="content-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Nueva Compra</h5>
+                </div>
+                <div class="card-body">
+                    <form id="compraForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Producto</label>
+                                <input type="text" class="form-control" name="producto" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Proveedor</label>
+                                <input type="text" class="form-control" name="proveedor" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Cantidad</label>
+                                <input type="number" class="form-control" name="cantidad" min="1" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Precio Unitario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" name="precio" min="0" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha de Compra</label>
+                                <input type="date" class="form-control" name="fecha" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Notas</label>
+                                <textarea class="form-control" name="notas" rows="3"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-save me-2"></i>Registrar Compra
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <?php if($currentPage == 'clientes'): ?>
+            <!-- Formulario de Clientes -->
             <div class="content-card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Nuevo Cliente</h5>
@@ -505,7 +675,125 @@ $menuCollapsed = isset($_SESSION['menuCollapsed']) ? $_SESSION['menuCollapsed'] 
                     sidebar.classList.remove('show');
                 }
             });
+
+            // Inicializar gráficos si estamos en la página de estadísticas
+            <?php if($currentPage == 'estadisticas'): ?>
+            // Gráfico de Clientes
+            const clientesCtx = document.getElementById('clientesChart').getContext('2d');
+            new Chart(clientesCtx, {
+                type: 'line',
+                data: {
+                    labels: <?= json_encode($chartData['clientes']['labels']) ?>,
+                    datasets: [{
+                        label: 'Total de Clientes',
+                        data: <?= json_encode($chartData['clientes']['data']) ?>,
+                        backgroundColor: 'rgba(255, 105, 180, 0.2)',
+                        borderColor: 'rgba(255, 105, 180, 1)',
+                        borderWidth: 2,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Citas
+            const citasCtx = document.getElementById('citasChart').getContext('2d');
+            new Chart(citasCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?= json_encode($chartData['citas']['labels']) ?>,
+                    datasets: [{
+                        label: 'Citas por Día',
+                        data: <?= json_encode($chartData['citas']['data']) ?>,
+                        backgroundColor: 'rgba(255, 141, 199, 0.7)',
+                        borderColor: 'rgba(255, 141, 199, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Ingresos
+            const ingresosCtx = document.getElementById('ingresosChart').getContext('2d');
+            new Chart(ingresosCtx, {
+                type: 'line',
+                data: {
+                    labels: <?= json_encode($chartData['ingresos']['labels']) ?>,
+                    datasets: [{
+                        label: 'Ingresos Mensuales ($)',
+                        data: <?= json_encode($chartData['ingresos']['data']) ?>,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Tratamientos
+            const tratamientosCtx = document.getElementById('tratamientosChart').getContext('2d');
+            new Chart(tratamientosCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: <?= json_encode($chartData['tratamientos']['labels']) ?>,
+                    datasets: [{
+                        label: 'Distribución de Tratamientos',
+                        data: <?= json_encode($chartData['tratamientos']['data']) ?>,
+                        backgroundColor: [
+                            'rgba(255, 105, 180, 0.7)',
+                            'rgba(255, 141, 199, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 105, 180, 1)',
+                            'rgba(255, 141, 199, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+            <?php endif; ?>
         });
     </script>
 </body>
-</html> 
+</html>
