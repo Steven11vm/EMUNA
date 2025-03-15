@@ -1,6 +1,5 @@
 <?php
-session_start();
-
+ require_once "session_check.php"; 
 // Verificación de sesión
 if (!isset($_SESSION["username"])) {
     header("Location: login.php");
